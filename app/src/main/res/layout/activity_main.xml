@@ -35,18 +35,15 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent">
 
-            <!-- Head motion joystick -->
-
-            <!-- Body motion joystick -->
             <com.example.kufibotcontroller.JoystickView
-                android:id="@+id/head_joystick"
+                android:id="@+id/body_joystick"
                 android:layout_width="0dp"
                 android:layout_height="200dp"
                 android:layout_weight="1"
                 android:background="@android:color/transparent" />
 
             <com.example.kufibotcontroller.JoystickView
-                android:id="@+id/body_joystick"
+                android:id="@+id/head_joystick"
                 android:layout_width="0dp"
                 android:layout_height="200dp"
                 android:layout_weight="1"
