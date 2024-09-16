@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         WebSocketVideoClient videoClient = WebSocketVideoClient.getInstance();
         videoClient.setContext(this);
         videoClient.setImageView(imageView);
-        videoClient.connect("ws://192.168.1.20:8765");  // Replace with your WebSocket server URL
+        videoClient.connect("ws://192.168.1.39:8765");  // Replace with your WebSocket server URL
         setFullScreen();
 
         drawerLayout = findViewById(R.id.drawer_layout);

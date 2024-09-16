@@ -46,7 +46,7 @@ public class JoystickView extends View {
         handlePaint.setAlpha(128);  // Set transparency for the base
         handlePaint.setStyle(Paint.Style.FILL);
 
-        controllerClient.connect("ws://192.168.1.20:8766");
+        controllerClient.connect("ws://192.168.1.39:8766");
     }
 
     @Override

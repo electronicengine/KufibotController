@@ -76,7 +76,7 @@ public class WebSocketControllerClient {
             webSocket = client.newWebSocket(request, new WebSocketListener() {
                 @Override
                 public void onOpen(WebSocket webSocket, Response response) {
-                    Log.d("Controller WebSocket", "Connected to the server");
+                    Log.d("Controller WebSocket", "Connected to the server: " + url);
                     connected = true;
                 }
 

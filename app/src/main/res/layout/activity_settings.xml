@@ -21,7 +21,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/toolbar"
             android:layout_margin="16dp"
-            android:hint="ws://192.168.1.20:8766 - Controller"
+            android:hint="ws://192.168.1.39:8766 - Controller"
             android:inputType="text" />
 
         <EditText
@@ -31,7 +31,7 @@
             android:layout_below="@id/controller_socket"
             android:layout_margin="16dp"
             android:layout_marginTop="8dp"
-            android:hint="ws://192.168.1.20:8765 - Video"
+            android:hint="ws://192.168.1.39:8765 - Video"
             android:inputType="text" />
 
         <Button

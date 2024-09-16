@@ -74,7 +74,7 @@ public class WebSocketVideoClient {
             public void onOpen(WebSocket webSocket, Response response) {
                 connected = true;
                 showToast("Connected to the server");
-                Log.d("WebSocket", "Connected to the server");
+                Log.d("WebSocket", "Connected to the server: " + url );
             }
 
             @Override
