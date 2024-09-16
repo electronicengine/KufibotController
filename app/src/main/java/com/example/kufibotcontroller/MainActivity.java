@@ -67,6 +67,10 @@ public class MainActivity extends AppCompatActivity {
                     // Open SettingsActivity
                     Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
                     startActivity(intent);
+                }else if (id == R.id.nav_terminal) {
+                    // Open TerminalActivity
+                    Intent intent = new Intent(MainActivity.this, TerminalActivity.class);
+                    startActivity(intent);
                 }
 
                 drawerLayout.closeDrawer(GravityCompat.START);
