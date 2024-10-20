@@ -45,8 +45,6 @@ public class JoystickView extends View {
         handlePaint.setColor(Color.RED);
         handlePaint.setAlpha(128);  // Set transparency for the base
         handlePaint.setStyle(Paint.Style.FILL);
-
-        controllerClient.connect("ws://192.168.1.39:8766");
     }
 
     @Override
@@ -97,14 +95,7 @@ public class JoystickView extends View {
                     jsonObject.put("Angle", (int) Math.toDegrees(Math.atan2(dy, dx)) * -1);
                     jsonObject.put("Strength", (int) Math.min((distance / baseRadius * 100), 100));
 
-                    // Convert JSON object to string
-                    String jsonData = jsonObject.toString();
-
-                    // Now jsonData contains your JSON formatted message
-                    Log.d("joysticks", jsonData);
-
-                    // Send JSON data over WebSocket
-                    controllerClient.send(jsonData);
+                    controllerClient.writeMotionControlData(getResources().getResourceEntryName(getId()), jsonObject);
 
                 } catch (JSONException e) {
                     Log.e("JSON Error", "Failed to create JSON object: " + e.getMessage());
@@ -125,10 +116,7 @@ public class JoystickView extends View {
                     jsonStopObject.put("Angle", (int) 0);
                     jsonStopObject.put("Strength", (int) 0);
 
-                    String jsonStopData = jsonStopObject.toString();
-                    Log.d("joysticks", jsonStopData);
-
-                    controllerClient.send(jsonStopData);
+                    controllerClient.writeMotionControlData(getResources().getResourceEntryName(getId()), jsonStopObject);
 
                 } catch (JSONException e) {
                     Log.e("JSON Error", "Failed to create JSON object: " + e.getMessage());

@@ -16,7 +16,7 @@
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
         <EditText
-            android:id="@+id/controller_socket"
+            android:id="@+id/controller_socket_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/toolbar"
@@ -24,21 +24,11 @@
             android:hint="ws://192.168.1.39:8766 - Controller"
             android:inputType="text" />
 
-        <EditText
-            android:id="@+id/video_socket"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/controller_socket"
-            android:layout_margin="16dp"
-            android:layout_marginTop="8dp"
-            android:hint="ws://192.168.1.39:8765 - Video"
-            android:inputType="text" />
-
         <Button
             android:id="@+id/save_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/video_socket"
+            android:layout_below="@id/controller_socket_text"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="16dp"
             android:text="Save" />
@@ -53,60 +43,12 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/right_arm"
+                android:id="@+id/info"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Right Arm"
+                android:text="Info"
                 android:textSize="16sp" />
 
-            <TextView
-                android:id="@+id/left_arm"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Left Arm"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/neck_down"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Neck Down"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/neck_up"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Neck Up"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/neck_right"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Neck Right"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/eye_left"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Eye Left"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/eye_right"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Eye Right"
-                android:textSize="16sp" />
-
-            <Button
-                android:id="@+id/get_info_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Get Info" />
         </LinearLayout>
 
     </RelativeLayout>

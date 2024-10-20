@@ -5,32 +5,18 @@ import android.util.Log;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-import android.os.Bundle;
-import android.view.SurfaceView;
+
 import android.widget.SeekBar;
 import android.widget.Switch;
-import android.widget.VideoView;
-import androidx.appcompat.app.AppCompatActivity;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.WebSocket;
-import okhttp3.WebSocketListener;
-import okio.ByteString;
 import android.view.View;
 import android.view.MenuItem;
 import androidx.drawerlayout.widget.DrawerLayout;
 import android.content.Intent;
-import android.os.Bundle;
-import android.view.MenuItem;
+
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
+
 import com.google.android.material.navigation.NavigationView;
 
 import org.json.JSONException;
@@ -39,7 +25,7 @@ import org.json.JSONObject;
 public class MainActivity extends AppCompatActivity {
 
     private DrawerLayout drawerLayout;
-    private WebSocketVideoClient webSocketVideoClient;
+    private WebSocketControllerClient webSocketVideoClient;
     private ImageView imageView;
 
     @Override
@@ -49,10 +35,12 @@ public class MainActivity extends AppCompatActivity {
 
         imageView = findViewById(R.id.imageView);
 
-        WebSocketVideoClient videoClient = WebSocketVideoClient.getInstance();
-        videoClient.setContext(this);
-        videoClient.setImageView(imageView);
-        videoClient.connect("ws://192.168.1.39:8765");  // Replace with your WebSocket server URL
+        WebSocketControllerClient controllerClient = WebSocketControllerClient.getInstance();
+        controllerClient.setContext(this);
+        controllerClient.setImageView(imageView);
+        controllerClient.setTextViews(findViewById(R.id.power),findViewById(R.id.compass),
+                findViewById(R.id.distance), findViewById(R.id.current));
+        controllerClient.connect("ws://192.168.1.44:8765");  // Replace with your WebSocket server URL
         setFullScreen();
 
         drawerLayout = findViewById(R.id.drawer_layout);
@@ -78,11 +66,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        SeekBar right_arm = findViewById(R.id.right_arm);
+        SeekBar right_arm = findViewById(R.id.info);
         SeekBar left_arm = findViewById(R.id.left_arm);
         Switch rightEyeSwitch = findViewById(R.id.right_eye);
         Switch leftEyeSwitch = findViewById(R.id.left_eye);
-        WebSocketControllerClient controllerClient = WebSocketControllerClient.getInstance();
 
         rightEyeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -92,9 +79,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     jsonObject.put("Id", "right_eye");
                     jsonObject.put("Angle", isChecked ? 180 : 0);
-                    String jsonData = jsonObject.toString();
-                    Log.d("joysticks", jsonData);
-                    controllerClient.send(jsonData);
+                    controllerClient.writeEyeControlData("right_eye", jsonObject);
 
                 } catch (JSONException e) {
                     Log.e("JSON Error", "Failed to create JSON object: " + e.getMessage());
@@ -109,9 +94,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     jsonObject.put("Id", "left_eye");
                     jsonObject.put("Angle", isChecked ? 180 : 0);
-                    String jsonData = jsonObject.toString();
-                    Log.d("joysticks", jsonData);
-                    controllerClient.send(jsonData);
+                    controllerClient.writeEyeControlData("left_eye", jsonObject);
 
                 } catch (JSONException e) {
                     Log.e("JSON Error", "Failed to create JSON object: " + e.getMessage());
@@ -127,9 +110,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     jsonObject.put("Id", "right_arm");
                     jsonObject.put("Angle", progress);
-                    String jsonData = jsonObject.toString();
-                    Log.d("joysticks", jsonData);
-                    controllerClient.send(jsonData);
+                    controllerClient.writeMotionControlData("right_arm", jsonObject);
 
                 } catch (JSONException e) {
                     Log.e("JSON Error", "Failed to create JSON object: " + e.getMessage());
@@ -154,9 +135,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     jsonObject.put("Id", "left_arm");
                     jsonObject.put("Angle", progress);
-                    String jsonData = jsonObject.toString();
-                    Log.d("joysticks", jsonData);
-                    controllerClient.send(jsonData);
+                    controllerClient.writeArmControlData( "left_arm", jsonObject);
 
                 } catch (JSONException e) {
                     Log.e("JSON Error", "Failed to create JSON object: " + e.getMessage());
