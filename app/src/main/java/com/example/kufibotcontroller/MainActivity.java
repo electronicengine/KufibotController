@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
         WebSocketControllerClient controllerClient = WebSocketControllerClient.getInstance();
         controllerClient.setContext(this);
         controllerClient.setImageView(imageView);
-        controllerClient.setTextViews(findViewById(R.id.power),findViewById(R.id.compass),
+        controllerClient.setTextViews(findViewById(R.id.voltage),findViewById(R.id.compass),
                 findViewById(R.id.distance), findViewById(R.id.current));
         controllerClient.connect("ws://192.168.1.44:8765");  // Replace with your WebSocket server URL
         setFullScreen();

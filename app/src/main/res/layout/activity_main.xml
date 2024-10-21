@@ -44,7 +44,7 @@
             app:layout_constraintTop_toTopOf="@+id/imageView" />
 
         <TextView
-            android:id="@+id/power"
+            android:id="@+id/voltage"
             android:layout_width="130dp"
             android:layout_height="20dp"
             android:layout_marginStart="16dp"
@@ -52,7 +52,7 @@
             android:background="#A12223"
             android:hapticFeedbackEnabled="false"
             android:shadowColor="#000000"
-            android:text="Power:"
+            android:text="Voltage:"
             android:textColor="@color/white"
             android:textColorHighlight="@color/white"
             app:layout_constraintStart_toStartOf="parent"

@@ -29,7 +29,7 @@ public class WebSocketControllerClient {
     private WebSocket webSocket;
     private OkHttpClient client;
     private ImageView imageView;
-    private TextView powerText;
+    private TextView voltageText;
     private TextView compassText;
     private TextView distanceText;
     private TextView currentText;
@@ -67,8 +67,8 @@ public class WebSocketControllerClient {
         this.imageView = imageView;
     }
 
-    public void setTextViews(TextView powerText, TextView compassText, TextView distanceText, TextView currentText){
-        this.powerText = powerText;
+    public void setTextViews(TextView voltageText, TextView compassText, TextView distanceText, TextView currentText){
+        this.voltageText = voltageText;
         this.compassText = compassText;
         this.distanceText = distanceText;
         this.currentText = currentText;
@@ -132,7 +132,7 @@ public class WebSocketControllerClient {
                 try {
                     JSONObject jsonObject = new JSONObject(text);
                     JSONObject powerData = jsonObject.getJSONObject("power");
-                    double power = powerData.getDouble("Power");
+                    double voltage = powerData.getDouble("BusVoltage");
                     JSONObject compassData = jsonObject.getJSONObject("compass");
                     double compass = compassData.getDouble("angle");
                     JSONObject distanceData = jsonObject.getJSONObject("distance");
@@ -140,11 +140,11 @@ public class WebSocketControllerClient {
                     JSONObject jointData = jsonObject.getJSONObject(("joint_angles"));
                     double current = powerData.getDouble("BusCurrent");
 
-                    powerText.post(new Runnable() {
+                    voltageText.post(new Runnable() {
                         @Override
                         public void run() {
-                            String formattedPower = String.format(Locale.getDefault(), "%.1f", power);
-                            powerText.setText("Power: " +  String.valueOf(formattedPower) + " mW");
+                            String formattedPower = String.format(Locale.getDefault(), "%.2f", voltage);
+                            voltageText.setText("Voltage: " +  String.valueOf(formattedPower) + " V");
                         }
                     });
 
