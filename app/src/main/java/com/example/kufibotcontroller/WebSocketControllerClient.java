@@ -93,7 +93,7 @@ public class WebSocketControllerClient {
     }
 
     public void connect(String url) {
-        if (url == null || url.isEmpty()) {
+        if (url == null || url.isEmpty() || connected) {
             Log.e("WebSocket", "Invalid URL");
             return;
         }
@@ -252,20 +252,25 @@ public class WebSocketControllerClient {
         }
     }
 
+    public void writeTalkie(String Text){
+        try {
+            responseJson.put("talkie", Text);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     // Method to show a Toast message
     private void showToast(final String message) {
         if (context != null) {
             // Show Toast on the main thread
 
             ((Activity) context).runOnUiThread(new Runnable() {
-
                 @Override
                 public void run() {
                     Toast.makeText(context, message, Toast.LENGTH_LONG).show();
                 }
             });
-
         }
-
     }
 }

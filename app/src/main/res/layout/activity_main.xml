@@ -23,11 +23,11 @@
             android:background="@color/black"
             android:scaleType="fitCenter"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintVertical_bias="1.0" />
 
         <TextView
             android:id="@+id/distance"
@@ -75,24 +75,27 @@
         <LinearLayout
             android:id="@+id/joysticks_layout"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:layout_height="160dp"
+            android:layout_marginBottom="32dp"
             android:background="@android:color/transparent"
+            android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent">
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
 
             <com.example.kufibotcontroller.JoystickView
                 android:id="@+id/body_joystick"
-                android:layout_width="0dp"
-                android:layout_height="200dp"
+                android:layout_width="160dp"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@android:color/transparent" />
 
             <com.example.kufibotcontroller.JoystickView
                 android:id="@+id/head_joystick"
-                android:layout_width="0dp"
-                android:layout_height="200dp"
+                android:layout_width="160dp"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@android:color/transparent" />
 
@@ -149,6 +152,20 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             tools:ignore="MissingConstraints" />
+
+        <Button
+            android:id="@+id/speech_button"
+            android:layout_width="78dp"
+            android:layout_height="50dp"
+            android:layout_marginBottom="40dp"
+            android:soundEffectsEnabled="true"
+            android:text="Talk"
+            android:textColor="#FFFFFF"
+            android:alpha="0.6"
+            app:layout_constraintBottom_toBottomOf="@+id/imageView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

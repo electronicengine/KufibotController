@@ -1,18 +1,50 @@
 package com.example.kufibotcontroller;
 
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.MotionEvent;
+import android.view.SoundEffectConstants;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ImageView;
-
+import android.Manifest;
+import android.media.AudioAttributes;
+import android.media.SoundPool;
 import androidx.appcompat.app.AppCompatActivity;
+import android.media.MediaPlayer;
+import android.app.NotificationManager;
+import android.content.Context;
+import android.media.AudioAttributes;
+import android.media.SoundPool;
+import android.media.RingtoneManager;
+import android.net.Uri;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.Button;
 
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.view.View;
 import android.view.MenuItem;
+
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import android.content.Intent;
+import android.speech.RecognizerIntent;
+import android.widget.Button;
+import java.util.ArrayList;
+import android.content.Intent;
+import android.os.Bundle;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
+import android.util.Log;
+import android.widget.TextView;
+import android.widget.Toast;
+
 
 import androidx.annotation.NonNull;
 import androidx.core.view.GravityCompat;
@@ -22,11 +54,16 @@ import com.google.android.material.navigation.NavigationView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+
+
 public class MainActivity extends AppCompatActivity {
 
     private DrawerLayout drawerLayout;
     private WebSocketControllerClient webSocketVideoClient;
     private ImageView imageView;
+    private static final int SPEECH_REQUEST_CODE = 100;
+    private SpeechRecognizer speechRecognizer;
+    private static final int PERMISSION_REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +71,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         imageView = findViewById(R.id.imageView);
+        final MediaPlayer button_pressed_sound = MediaPlayer.create(this, R.raw.press);
+        final MediaPlayer button_released_sound = MediaPlayer.create(this, R.raw.release);
+
+        // Initialize SoundPool with appropriate AudioAttributes
+        AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_MEDIA)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .build();
+
 
         WebSocketControllerClient controllerClient = WebSocketControllerClient.getInstance();
         controllerClient.setContext(this);
@@ -45,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
 
         drawerLayout = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
+
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -59,8 +106,11 @@ public class MainActivity extends AppCompatActivity {
                     // Open TerminalActivity
                     Intent intent = new Intent(MainActivity.this, TerminalActivity.class);
                     startActivity(intent);
+                }else if (id == R.id.nav_bluetooth) {
+                    // Open TerminalActivity
+                    Intent intent = new Intent(MainActivity.this, BluetoothActivity.class);
+                    startActivity(intent);
                 }
-
                 drawerLayout.closeDrawer(GravityCompat.START);
                 return true;
             }
@@ -152,6 +202,47 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, PERMISSION_REQUEST_CODE);
+        }
+
+        // Initialize SpeechRecognizer
+        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+        speechRecognizer.setRecognitionListener(new SpeechRecognitionListener());
+
+        Button speechButton = findViewById(R.id.speech_button);
+        speechButton.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        startSpeechRecognition();  // Start listening when pressed
+                        Log.d("Speech", "Button pressed - starting recognition.");
+                        // Play button press sound
+                        button_pressed_sound.start();
+
+                        // Change the button's appearance for a virtual effect (e.g., change background color)
+                        speechButton.setBackgroundColor(0xFFFF0000); // Red color on press
+                        return true;  // Returning true means we consumed the event
+
+                    case MotionEvent.ACTION_UP:
+                        stopSpeechRecognition();  // Stop listening when released
+                        Log.d("Speech", "Button released - stopping recognition.");
+                        // Play button release sound
+                        button_released_sound.start();
+
+                        // Reset the button's appearance back to original
+                        speechButton.setBackgroundColor(0xFFA12223); // Original color
+                        return true;
+
+                    default:
+                        return false;  // Return false for other actions
+                }
+            }
+        });
+
     }
 
     private void setFullScreen() {
@@ -173,5 +264,96 @@ public class MainActivity extends AppCompatActivity {
         if (webSocketVideoClient != null) {
             webSocketVideoClient.disconnect();
         }
+
+        if (speechRecognizer != null) {
+            speechRecognizer.destroy();
+        }
+    }
+
+    private void startSpeechRecognition() {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "tr-TR");  // Turkish language
+        intent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);  // Get partial results
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Konuşun...");
+
+        speechRecognizer.startListening(intent);
+    }
+
+
+    private void stopSpeechRecognition() {
+        speechRecognizer.stopListening();
+
+    }
+
+    private class SpeechRecognitionListener implements RecognitionListener {
+
+        private void showToast(String message) {
+            TextView compass = findViewById(R.id.compass);
+
+            runOnUiThread(() -> {
+                Toast toast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG);
+                toast.setGravity(Gravity.CENTER, 1000, 1000); // Adjust the position
+                toast.show();
+
+            });
+        }
+
+        @Override
+        public void onReadyForSpeech(Bundle params) {
+            Log.d("Speech", "Ready for speech.");
+        }
+
+        @Override
+        public void onBeginningOfSpeech() {
+            Log.d("Speech", "Speech started.");
+        }
+
+        @Override
+        public void onRmsChanged(float rmsdB) {
+            // Optional: Handle volume level changes
+        }
+
+        @Override
+        public void onBufferReceived(byte[] buffer) {
+            // Optional: Handle audio buffer
+        }
+
+        @Override
+        public void onEndOfSpeech() {
+            Log.d("Speech", "Speech ended.");
+        }
+
+        @Override
+        public void onError(int error) {
+            Log.e("Speech Error", "Error: " + error);
+        }
+
+        @Override
+        public void onResults(Bundle results) {
+            ArrayList<String> matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+            if (matches != null && !matches.isEmpty()) {
+                String recognizedText = matches.get(0);
+                Log.d("Speech Result", "Recognized text: " + recognizedText);
+                showToast(recognizedText);
+                WebSocketControllerClient client = WebSocketControllerClient.getInstance();
+                client.writeTalkie(recognizedText);
+            }
+        }
+
+        @Override
+        public void onPartialResults(Bundle partialResults) {
+            ArrayList<String> matches = partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+            if (matches != null && !matches.isEmpty()) {
+                Log.d("Speech Partial", "Partial: " + matches.get(0));
+
+            }
+        }
+
+        @Override
+        public void onEvent(int eventType, Bundle params) {
+            // Optional: Handle other events
+        }
     }
 }
+
