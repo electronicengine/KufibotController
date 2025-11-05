@@ -27,7 +27,23 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="1.0" />
+            app:layout_constraintVertical_bias="0.0" />
+
+        <Button
+            android:id="@+id/ai_mode_button"
+            android:layout_width="71dp"
+            android:layout_height="47dp"
+            android:alpha="0.6"
+            android:backgroundTint="#2196F3"
+            android:soundEffectsEnabled="true"
+            android:text="AI"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@+id/imageView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/imageView"
+            app:layout_constraintVertical_bias="0.019" />
 
         <TextView
             android:id="@+id/distance"
@@ -35,7 +51,7 @@
             android:layout_height="0dp"
             android:layout_marginTop="44dp"
             android:layout_marginEnd="16dp"
-            android:background="#A12223"
+            android:background="#FF9800"
             android:shadowColor="#000000"
             android:text="Distance:"
             android:textColor="@color/white"
@@ -49,7 +65,7 @@
             android:layout_height="20dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="44dp"
-            android:background="#A12223"
+            android:background="#FF9800"
             android:hapticFeedbackEnabled="false"
             android:shadowColor="#000000"
             android:text="Voltage:"
@@ -64,7 +80,7 @@
             android:layout_height="20dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            android:background="#A12223"
+            android:background="#FF9800"
             android:shadowColor="#000000"
             android:text="Compass"
             android:textColor="@color/white"
@@ -107,6 +123,8 @@
             android:layout_height="20dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
+            android:thumbTint="#8BC34A"
+            android:trackTint="#8BC34A"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             tools:ignore="MissingConstraints" />
@@ -117,6 +135,8 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="72dp"
             android:layout_marginBottom="140dp"
+            android:thumbTint="#8BC34A"
+            android:trackTint="#8BC34A"
             app:layout_constraintBottom_toTopOf="@+id/info"
             app:layout_constraintEnd_toEndOf="parent" />
 
@@ -126,6 +146,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="72dp"
             android:layout_marginBottom="140dp"
+            android:thumbTint="#8BC34A"
+            android:trackTint="#8BC34A"
             app:layout_constraintBottom_toTopOf="@+id/left_arm"
             app:layout_constraintStart_toStartOf="parent" />
 
@@ -135,7 +157,7 @@
             android:layout_height="20dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:background="#A12223"
+            android:background="#FF9800"
             android:text="Current: "
             android:textColor="@color/white"
             android:textColorHighlight="@color/white"
@@ -149,6 +171,8 @@
             android:layout_marginStart="16dp"
             android:layout_marginBottom="16dp"
             android:progress="100"
+            android:thumbTint="#8BC34A"
+            android:trackTint="#8BC34A"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             tools:ignore="MissingConstraints" />
@@ -158,10 +182,11 @@
             android:layout_width="78dp"
             android:layout_height="50dp"
             android:layout_marginBottom="40dp"
+            android:alpha="0.6"
+            android:backgroundTint="#673AB7"
             android:soundEffectsEnabled="true"
             android:text="Talk"
             android:textColor="#FFFFFF"
-            android:alpha="0.6"
             app:layout_constraintBottom_toBottomOf="@+id/imageView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.498"

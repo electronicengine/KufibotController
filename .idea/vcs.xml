@@ -2,5 +2,9 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app/java-llama.cpp" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app/java-llama.cpp/_deps/json-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app/java-llama.cpp/_deps/llama.cpp-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/app/java-llama.cpp/_deps/llama.cpp-src/ggml/src/kompute" vcs="Git" />
   </component>
 </project>

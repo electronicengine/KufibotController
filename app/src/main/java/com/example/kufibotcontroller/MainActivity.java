@@ -1,6 +1,9 @@
 package com.example.kufibotcontroller;
 
+import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -60,15 +63,19 @@ public class MainActivity extends AppCompatActivity {
 
     private DrawerLayout drawerLayout;
     private WebSocketControllerClient webSocketVideoClient;
+    private UDPServerDiscovery discovery;
+
     private ImageView imageView;
     private static final int SPEECH_REQUEST_CODE = 100;
     private SpeechRecognizer speechRecognizer;
     private static final int PERMISSION_REQUEST_CODE = 1;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        discovery = new UDPServerDiscovery();
 
         imageView = findViewById(R.id.imageView);
         final MediaPlayer button_pressed_sound = MediaPlayer.create(this, R.raw.press);
@@ -86,7 +93,24 @@ public class MainActivity extends AppCompatActivity {
         controllerClient.setImageView(imageView);
         controllerClient.setTextViews(findViewById(R.id.voltage),findViewById(R.id.compass),
                 findViewById(R.id.distance), findViewById(R.id.current));
-        controllerClient.connect("ws://192.168.1.44:8765");  // Replace with your WebSocket server URL
+
+        discovery.discoverServer(new UDPServerDiscovery.DiscoveryCallback() {
+            @Override
+            public void onServerFound(String ip, int port) {
+                runOnUiThread(() -> {
+                    // WebSocket'e bağlan
+                    controllerClient.connect("ws://" + ip + ":" + port);  // Replace with your WebSocket server URL
+                    Toast.makeText(MainActivity.this, "Found: " + ip + ":" + port, Toast.LENGTH_LONG).show();
+                });
+            }
+
+            @Override
+            public void onDiscoveryFailed(String error) {
+                runOnUiThread(() -> {
+                    Toast.makeText(MainActivity.this, "Couldn't Find: " + error, Toast.LENGTH_LONG).show();
+                });
+            }
+        });
         setFullScreen();
 
         drawerLayout = findViewById(R.id.drawer_layout);
@@ -218,30 +242,56 @@ public class MainActivity extends AppCompatActivity {
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        startSpeechRecognition();  // Start listening when pressed
+                        startSpeechRecognition();
                         Log.d("Speech", "Button pressed - starting recognition.");
-                        // Play button press sound
                         button_pressed_sound.start();
+                        v.setBackgroundTintList(ColorStateList.valueOf(Color.GREEN));
 
-                        // Change the button's appearance for a virtual effect (e.g., change background color)
-                        speechButton.setBackgroundColor(0xFFFF0000); // Red color on press
-                        return true;  // Returning true means we consumed the event
+                        v.performClick();
+                        return true;
 
                     case MotionEvent.ACTION_UP:
-                        stopSpeechRecognition();  // Stop listening when released
+                        stopSpeechRecognition();
                         Log.d("Speech", "Button released - stopping recognition.");
-                        // Play button release sound
                         button_released_sound.start();
+                        v.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#673AB7")));
 
-                        // Reset the button's appearance back to original
-                        speechButton.setBackgroundColor(0xFFA12223); // Original color
+                        v.performClick();
                         return true;
 
                     default:
-                        return false;  // Return false for other actions
+                        return false;
                 }
             }
         });
+
+        Button aiModeButton = findViewById(R.id.ai_mode_button);
+        final boolean[] isAiModeActivated = {false}; // Butonun başlangıç durumu
+
+        aiModeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isAiModeActivated[0]) {
+                    // Buton şu an ON durumunda, OFF yap
+                    aiModeButton.setBackgroundTintList(
+                            ColorStateList.valueOf(Color.parseColor("#2196F3"))
+                    );
+                    isAiModeActivated[0] = false;
+                    Toast.makeText(MainActivity.this, "AI Mode OFF", Toast.LENGTH_SHORT).show();
+                    controllerClient.writeTalkie("switch ai mode off");
+
+                } else {
+                    // Buton OFF durumunda, ON yap
+                    aiModeButton.setBackgroundTintList(
+                            ColorStateList.valueOf(Color.GREEN) // ON rengi
+                    );
+                    isAiModeActivated[0] = true;
+                    Toast.makeText(MainActivity.this, "AI Mode ON", Toast.LENGTH_SHORT).show();
+                    controllerClient.writeTalkie("switch ai mode on");
+                }
+            }
+        });
+
 
     }
 

@@ -41,11 +41,6 @@ public class WebSocketControllerClient {
     static private String connectionUrl;
     private boolean connected = false;
     private volatile JSONObject responseJson = new JSONObject();
-/*
-                    jsonObject.put("Id", "right_eye");
-                    jsonObject.put("Angle", isChecked ? 180 : 0);
-    String jsonData = jsonObject.toString();
-*/
 
     // Public method to provide access to the singleton instance
     public static synchronized WebSocketControllerClient getInstance() {
@@ -128,68 +123,79 @@ public class WebSocketControllerClient {
 
             @Override
             public void onMessage(WebSocket webSocket, String text) {
+                // null veya boş metin kontrolü
+                if (text == null || text.trim().isEmpty()) {
+                    Log.w("WebSocket", "Received empty or null message, ignoring...");
+
+                    if (responseJson != null) {
+                        webSocket.send(responseJson.toString());
+                        responseJson = new JSONObject();
+                    }
+                    return;
+                }
 
                 try {
                     JSONObject jsonObject = new JSONObject(text);
-                    JSONObject powerData = jsonObject.getJSONObject("power");
-                    double voltage = powerData.getDouble("BusVoltage");
-                    JSONObject compassData = jsonObject.getJSONObject("compass");
-                    double compass = compassData.getDouble("angle");
-                    JSONObject distanceData = jsonObject.getJSONObject("distance");
-                    double distance = distanceData.getDouble("Distance");
-                    JSONObject jointData = jsonObject.getJSONObject(("joint_angles"));
-                    double current = powerData.getDouble("BusCurrent");
 
-                    voltageText.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            String formattedPower = String.format(Locale.getDefault(), "%.2f", voltage);
-                            voltageText.setText("Voltage: " +  String.valueOf(formattedPower) + " V");
-                        }
+                    // Alt objelerin varlığını kontrol et (ek güvenlik)
+                    JSONObject powerData = jsonObject.optJSONObject("power");
+                    JSONObject compassData = jsonObject.optJSONObject("compass");
+                    JSONObject distanceData = jsonObject.optJSONObject("distance");
+                    JSONObject jointData = jsonObject.optJSONObject("joint_angles");
+
+                    if (powerData == null || compassData == null || distanceData == null || jointData == null) {
+                        Log.w("WebSocket", "Some JSON fields missing in message: " + text);
+                        return;
+                    }
+
+                    double voltage = powerData.optDouble("BusVoltage", 0.0);
+                    double current = powerData.optDouble("BusCurrent", 0.0);
+                    double compass = compassData.optDouble("angle", 0.0);
+                    double distance = distanceData.optDouble("Distance", 0.0);
+
+                    voltageText.post(() -> {
+                        String formattedPower = String.format(Locale.getDefault(), "%.2f", voltage);
+                        voltageText.setText("Voltage: " + formattedPower + " V");
                     });
 
-                    compassText.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            String formattedCompass = String.format(Locale.getDefault(), "%.1f", compass);
-                            compassText.setText("Compass: " + String.valueOf(formattedCompass) + " °");
-                        }
+                    compassText.post(() -> {
+                        String formattedCompass = String.format(Locale.getDefault(), "%.1f", compass);
+                        compassText.setText("Compass: " + formattedCompass + " °");
                     });
 
-                    distanceText.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            distanceText.setText("Distance: " + String.valueOf(distance) + " cm");
-                        }
+                    distanceText.post(() -> {
+                        distanceText.setText("Distance: " + distance + " cm");
                     });
 
-                    currentText.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            String formattedCurrent = String.format(Locale.getDefault(), "%.1f", current);
-                            currentText.setText("Current: " + String.valueOf(formattedCurrent) + " mah");
-                        }
+                    currentText.post(() -> {
+                        String formattedCurrent = String.format(Locale.getDefault(), "%.1f", current);
+                        currentText.setText("Current: " + formattedCurrent + " mah");
                     });
 
-                    if (infoText != null){
-                        infoText.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                infoText.setText("Power: \n " + powerData.toString() + "\n \n +" +
-                                        "Compass: \n" + compassData.toString() + "\n\n" +
-                                        "Distance: \n" + distanceData.toString() + "\n\n" +
-                                        "Joints: \n" + jointData.toString() + "\n\n");
-                            }
+                    if (infoText != null) {
+                        infoText.post(() -> {
+                            infoText.setText("Power: \n" + powerData.toString() + "\n\n" +
+                                    "Compass: \n" + compassData.toString() + "\n\n" +
+                                    "Distance: \n" + distanceData.toString() + "\n\n" +
+                                    "Joints: \n" + jointData.toString() + "\n\n");
                         });
                     }
 
                 } catch (JSONException e) {
-                    throw new RuntimeException(e);
+                    // Sadece uyarı logla, bağlantıyı kesme
+                    Log.e("WebSocket", "Invalid JSON message: " + text, e);
+                    if (responseJson != null && responseJson.length() > 0) {
+                        webSocket.send(responseJson.toString());
+                        responseJson = new JSONObject();
+                    }
+                    return; // RuntimeException fırlatma
                 }
 
-                webSocket.send(responseJson.toString());
-                responseJson = new JSONObject();
-
+                // JSON cevabı varsa gönder
+                if (responseJson != null) {
+                    webSocket.send(responseJson.toString());
+                    responseJson = new JSONObject();
+                }
             }
 
             @Override
