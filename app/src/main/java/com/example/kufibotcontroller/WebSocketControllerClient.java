@@ -258,6 +258,17 @@ public class WebSocketControllerClient {
         }
     }
 
+    public void writeWifiConfigData(String SSID, String Password){
+        try {
+            JSONObject wifiConfig = new JSONObject();
+            wifiConfig.put("SSID", SSID);
+            wifiConfig.put("Password", Password);
+            responseJson.put("wifi_config", wifiConfig);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void writeTalkie(String Text){
         try {
             responseJson.put("talkie", Text);

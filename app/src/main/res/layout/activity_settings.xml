@@ -33,12 +33,39 @@
             android:layout_marginTop="16dp"
             android:text="Save" />
 
+        <EditText
+            android:id="@+id/wifi_ssid_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/save_button"
+            android:layout_margin="16dp"
+            android:hint="Wifi SSID"
+            android:inputType="text" />
+
+        <EditText
+            android:id="@+id/wifi_password_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/wifi_ssid_text"
+            android:layout_margin="16dp"
+            android:hint="Wifi Password"
+            android:inputType="text" />
+
+        <Button
+            android:id="@+id/connect_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/wifi_password_text"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="16dp"
+            android:text="Connect" />
+
         <!-- Panel with information labels and a button -->
         <LinearLayout
             android:id="@+id/info_panel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/save_button"
+            android:layout_below="@id/connect_button"
             android:layout_margin="16dp"
             android:orientation="vertical">
 

@@ -1,5 +1,6 @@
 package com.example.kufibotcontroller;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -17,7 +18,11 @@ import android.widget.TextView;
 public class SettingsActivity extends AppCompatActivity {
 
     private EditText controllerSocketEditText;
+    private EditText ssidEditText;
+    private EditText passwordEditText;
+
     private Button saveButton;
+    private Button connectButton;
     private Handler handler = new Handler(Looper.getMainLooper());
 
 
@@ -29,7 +34,12 @@ public class SettingsActivity extends AppCompatActivity {
 
         // Initialize views
         controllerSocketEditText = findViewById(R.id.controller_socket_text);
+        ssidEditText = findViewById(R.id.wifi_ssid_text);
+        passwordEditText = findViewById(R.id.wifi_password_text);
+
         saveButton = findViewById(R.id.save_button);
+        connectButton = findViewById(R.id.connect_button);
+
         WebSocketControllerClient controllerClient= WebSocketControllerClient.getInstance();
         // Initialize your TextView components
         TextView infoText = findViewById(R.id.info);
@@ -51,7 +61,35 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
+        connectButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String ssdi = ssidEditText.getText().toString();
+                String password = passwordEditText.getText().toString();
+
+                connectWifi(ssdi, password);
+            }
+        });
+
         setFullScreen();
+    }
+
+
+    private void connectWifi(String ssdi, String password) {
+        WebSocketControllerClient controllerClient = WebSocketControllerClient.getInstance();
+
+        controllerClient.writeWifiConfigData(ssdi, password);
+
+
+        // Show alert dialog
+        new AlertDialog.Builder(this)
+                .setTitle("Wi-Fi Configuration")
+                .setMessage("Wi-Fi credentials have been sent to the controller. Close the app and connect to the configured Wi-Fi network. And than open the app again.")
+                .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
+                .setCancelable(false)
+                .show();
+
     }
 
     private void saveSettings(String controllerSocket) {
